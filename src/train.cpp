@@ -69,12 +69,12 @@ int main(int argc, char** argv) {
       
     }
     std::cout << "=== Mean Loss: " << mean_loss / (bi + 1) << " ===\n\n";
-    //std::string path_to_model_states = common.to_save_path;
-    //std::filesystem::path model_state_dir = path_to_model_states + "/state_" + std::to_string(epoch);
-    //std::filesystem::create_directory(model_state_dir);
+    std::string path_to_model_states = common._to_save_path;
+    std::filesystem::path model_state_dir = path_to_model_states + "/state_" + std::to_string(epoch);
+    std::filesystem::create_directory(model_state_dir);
 
-    //std::string path_to_model_state = model_state_dir.string() + "/model_state.pt";
-    //torch::save(model, path_to_model_state);
+    std::string path_to_model_state = model_state_dir.string() + "/model_state.pt";
+    torch::save(model, path_to_model_state);
   }
 
   return 0;
