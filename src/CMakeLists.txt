@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.31.3)
-project(nntrainer)
+project(netrainer)
 find_package(Torch REQUIRED)
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
