@@ -86,6 +86,7 @@ std::vector<Batch> loadBatches(const std::string& batches_path) {
         label_dtype = metaJson["label_dtype"].get<std::string>();
         label_data_shape = metaJson["label_data_shape"].get<std::vector<int64_t>>();
 
+        // TODO: add support for other data types 
         if (main_dtype == "uint8" && label_dtype == "uint8") {
           batches.push_back(loadBatch<uint8_t, uint8_t>(std::filesystem::path(filename).string(),
                                     batch_size, main_data_shape, label_data_shape));
