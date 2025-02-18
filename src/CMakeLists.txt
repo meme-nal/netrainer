@@ -6,8 +6,6 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
   message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. ")
 endif()
 
-list(APPEND CMAKE_PREFIX_PATH "/home/me_me/Downloads/libtorch")
-
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
 set(HEADERS
