@@ -67,7 +67,7 @@ end-to-end example of nn configuration file:
 
 ## Common options
 
-**_num_epochs_** parameter means count of train epochs.
+**_num_epochs_** - number of training epochs.
 
 ```json
 {
@@ -87,7 +87,7 @@ end-to-end example of nn configuration file:
 
 ---
 
-**mbatch_size** parameter means minibatch size.
+**mbatch_size** - minibatch size.
 
 ```json
 {
@@ -108,7 +108,12 @@ end-to-end example of nn configuration file:
 
 ## Optimizer options
 
-**type** parameter means type of optimizer. The two optimizers are available now: SGD and Adam.
+**type** - type of optimizer. \
+\
+Available optimizer types:
+- SGD
+- Adam
+
 **lr** parameter means value of learning rate.
 
 ```json
@@ -121,3 +126,119 @@ end-to-end example of nn configuration file:
 ```
 
 ## Architecture
+
+Conventionally there are several types of layers. Common layers, auxiliary layers and loss layers.
+
+### Common layers
+
+#### Dense layer
+
+Or fully connected layer. It performs a linear transformation over input tensor. \
+\
+**type** - type of layer. \
+**input** - input tensor. \
+**output** - output of layer. \
+**shape** - shape of weights matrix. \
+**nonlinearity** parameter means what type of activation function will be applied to layer output. \
+\
+Available nonlinearities:
+- Linear
+- Sigmoid
+- Swish
+- Tanh
+- ReLU
+- ELU
+- LeakyReLU
+- SELU
+- CELU
+- GELU
+- Softmax
+
+**bias** - use bias or not. 
+
+```json
+{
+  "arch": {
+    "CustomLayerName": {
+      "type": "dense",
+      "input": "inputTensorName",
+      "output": "outputTensorName",
+      "shape": [100, 10],
+      "nonlinearity": "Linearity",
+      "bias": true
+    }
+  }
+}
+```
+
+---
+
+#### Conv layer
+
+### Auxiliary layers
+
+#### Flatten layer
+
+**type** - type of layer. \
+**input** - input tensor. \
+**output** - output of layer.
+
+```json
+{
+  "arch": {
+    "CustomLayerName": {
+      "type": "flatten",
+      "input": "inputTensorName",
+      "output": "outputTensorName"
+    }
+  }
+}
+```
+
+---
+
+#### Reshape layer
+
+**type** - type of layer. \
+**input** - input tensor. \
+**output** - output of layer. \
+**shape** - shape of output tensor.
+
+```json
+{
+  "arch": {
+    "CustomLayerName": {
+      "type": "reshape",
+      "input": "inputTensorName",
+      "output": "outputTensorName",
+      "shape": [1, 50, 50]
+    }
+  }
+}
+```
+
+---
+
+### Loss layers
+
+The last layer is used to calculate loss while training. Note that this layer has specific **_final_** name. \
+\
+**type** - type of layer. \
+**cost** - type of cost function. \
+\
+Available cost functions:
+- MAE
+- MSE
+- CrossEntropy
+
+```json
+{
+  "arch": {
+    "final": {
+      "type": "loss",
+      "cost": "MSE"
+    }
+  }
+}
+```
+
