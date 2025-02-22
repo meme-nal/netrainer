@@ -54,9 +54,10 @@ std::shared_ptr<BaseLayer> loadCriterion(const std::string& nn_cfg_path) {
 
   std::string costType = nn_cfg_json["arch"]["final"]["cost"];
 
-  if (costType == "MSE") {
-    return std::make_shared<MSELossLayer>();
-  } else {
+  if (costType == "MSE") { return std::make_shared<MSELossLayer>(); } 
+  else if (costType == "MAE") { return std::make_shared<MAELossLayer>(); }
+  else if (costType == "CrossEntropy") { return std::make_shared<CrossEntropyLossLayer>(); }
+  else {
     std::cerr << "Incorrect criterion type!\n";
   }
 }

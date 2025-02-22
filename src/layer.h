@@ -33,6 +33,7 @@ public:
     else if (_nonlinearityType == "SELU") { return torch::selu(linear->forward(input)); } 
     else if (_nonlinearityType == "CELU") { return torch::celu(linear->forward(input)); } 
     else if (_nonlinearityType == "GELU") { return torch::gelu(linear->forward(input)); } 
+    else if (_nonlinearityType == "Softmax") { return torch::softmax(linear->forward(input), 1); }
     else {
       std::cout << "Incorrect nonlinearity type!\n";
     }
@@ -118,6 +119,19 @@ private:
 */
 
 // LOSS LAYERS
+class MAELossLayer : public BaseLayer {
+public:
+  MAELossLayer() = default;
+
+  torch::Tensor forward(torch::Tensor prediction, torch::Tensor label) override {
+    return mae_loss(prediction, label);
+  }
+
+private:
+  torch::nn::L1Loss mae_loss;
+};
+
+
 class MSELossLayer : public BaseLayer {
 public:
   MSELossLayer() = default;
@@ -128,6 +142,19 @@ public:
 
 private:
   torch::nn::MSELoss mse_loss;
+};
+
+
+class CrossEntropyLossLayer : public BaseLayer {
+public:
+  CrossEntropyLossLayer() = default;
+
+  torch::Tensor forward(torch::Tensor prediction, torch::Tensor label) override {
+    return ce_loss(prediction, label);
+  }
+
+private:
+  torch::nn::CrossEntropyLoss ce_loss;
 };
 
 #endif // LAYER_H
