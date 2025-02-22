@@ -29,59 +29,30 @@ struct CommonOptions {
   torch::Device _device;
 };
 
-/*
-enum class LayerType: uint8_t {
-  LINEAR,
-
-  LOSS
-};
-
-enum class LossType: uint8_t {
-  MAE,
-  MSE
-};
-
-enum class NonlinearityType: uint8_t {
-  LINEAR,
-  SIGMOID,
-  TANH,
-  RELU
-};
-*/
 
 class NN: public torch::nn::Module {
 private:
   std::map<std::string, std::shared_ptr<BaseLayer>> _layers;
-  std::vector<std::string>                 _layer_names;
-  std::map<std::string, torch::Tensor>     _layer_inputs;
-  std::map<std::string, torch::Tensor>     _layer_outputs;
-  json                                     _net_configuration;
+  std::vector<std::string>                          _layer_names;
+  std::map<std::string, torch::Tensor>              _layer_inputs;
+  std::map<std::string, torch::Tensor>              _layer_outputs;
+  json                                              _net_configuration;
+
+  //bool                                              _trainMode;
 
 public:
-  NN(json& nn_arch_cfg); // TODO: make final layer
+  NN(json& nn_arch_cfg);
   torch::Tensor forward(torch::Tensor X);
+  std::vector<torch::Tensor> parameters();
 
-  std::vector<torch::Tensor> parameters() {
-    std::vector<torch::Tensor> all_parameters;
-
-    for (const auto& layer_pair : _layers) {
-      auto layer_parameters = layer_pair.second->parameters();
-      all_parameters.insert(all_parameters.end(),
-                            layer_parameters.begin(),
-                            layer_parameters.end());
-    }
-
-    return all_parameters;
-  }
+  //void train() { _trainMode = true; }
+  //void eval() { _trainMode = false; }
 };
 
-///
-// FABRIC FUNCTION
-///
 std::shared_ptr<BaseLayer> getLayer(const std::string& layerName, json& layerJson);
 
-void print_arch(const std::shared_ptr<NN>& model); // TODO: enhance with layer types
-size_t count_model_params(const std::shared_ptr<NN>& model); // TODO: Edit
+void print_arch(const std::shared_ptr<NN>& model);
+size_t count_model_params(const std::shared_ptr<NN>& model);
 CommonOptions loadCommonOptions(const std::string& nn_cfg_path);
 std::shared_ptr<NN> loadModel(const std::string& nn_cfg_path);
 std::shared_ptr<torch::optim::Optimizer> loadOptimizer(const std::string& nn_cfg_path, std::shared_ptr<NN>& model);

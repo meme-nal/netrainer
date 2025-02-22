@@ -14,9 +14,7 @@ public:
   virtual torch::Tensor forward(torch::Tensor input, torch::Tensor label = torch::tensor(0)) = 0;
 };
 
-///
 // COMMON LAYERS
-///
 class DenseLayer : public BaseLayer {
 public:
   DenseLayer(const std::string& layerName, json& layerJson) {
@@ -25,11 +23,17 @@ public:
   }
 
   torch::Tensor forward(torch::Tensor input, torch::Tensor label) override {
-    if (_nonlinearityType == "Linear") {
-      return linear->forward(input);
-    } else if (_nonlinearityType == "ReLU") {
-      return torch::relu(linear->forward(input));
-    } else {
+    if (_nonlinearityType == "Linear") { return linear->forward(input); }
+    else if (_nonlinearityType == "Sigmoid") { return torch::sigmoid(linear->forward(input)); }
+    else if (_nonlinearityType == "Swish") { return torch::silu(linear->forward(input)); }
+    else if (_nonlinearityType == "Tanh") { return torch::tanh(linear->forward(input)); }
+    else if (_nonlinearityType == "ReLU") { return torch::relu(linear->forward(input)); }
+    else if (_nonlinearityType == "ELU") { return torch::elu(linear->forward(input)); } 
+    else if (_nonlinearityType == "LeakyReLU") { return torch::leaky_relu(linear->forward(input)); } 
+    else if (_nonlinearityType == "SELU") { return torch::selu(linear->forward(input)); } 
+    else if (_nonlinearityType == "CELU") { return torch::celu(linear->forward(input)); } 
+    else if (_nonlinearityType == "GELU") { return torch::gelu(linear->forward(input)); } 
+    else {
       std::cout << "Incorrect nonlinearity type!\n";
     }
   }
@@ -57,9 +61,7 @@ private:
 };
 */
 
-///
 // AUXILIARY LAYERS
-///
 class FlattenLayer : public BaseLayer {
 public:
   FlattenLayer(const std::string& layerName, json& layerJson) {
@@ -115,10 +117,7 @@ private:
 };
 */
 
-///
 // LOSS LAYERS
-///
-
 class MSELossLayer : public BaseLayer {
 public:
   MSELossLayer() = default;

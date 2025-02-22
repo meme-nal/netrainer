@@ -61,24 +61,17 @@ std::shared_ptr<BaseLayer> loadCriterion(const std::string& nn_cfg_path) {
   }
 }
 
-///
-// FABRIC FUNCTION
-///
 std::shared_ptr<BaseLayer> getLayer(const std::string& layerName, json& layerJson) {
-  ///
   // COMMON LAYERS
-  ///
-  if (layerJson["type"] == "dense") {
-    return std::make_shared<DenseLayer>(layerName, layerJson);
+  if (layerJson["type"] == "dense") { return std::make_shared<DenseLayer>(layerName, layerJson); }
 
-  ///
   // AUXILIARY LAYERS
-  ///  
-  } else if (layerJson["type"] == "flatten") {
-    return std::make_shared<FlattenLayer>(layerName, layerJson);
-  } else if (layerJson["type"] == "reshape") {
-    return std::make_shared<ReshapeLayer>(layerName, layerJson);
-  } else {
+  else if (layerJson["type"] == "flatten") { return std::make_shared<FlattenLayer>(layerName, layerJson); }
+  else if (layerJson["type"] == "reshape") { return std::make_shared<ReshapeLayer>(layerName, layerJson); }
+  
+  // LOSS LAYERS
+
+  else {
     std::cout << "Incorrect layer type\n";
   }
 }
@@ -137,6 +130,19 @@ void print_arch(const std::shared_ptr<NN>& model) {
     std::cout << param.key() << " : " << param.value().sizes() << "\n\n";
   }
   std::cout << '\n';
+}
+
+std::vector<torch::Tensor> NN::parameters() {
+  std::vector<torch::Tensor> all_parameters;
+
+  for (const auto& layer_pair : _layers) {
+    auto layer_parameters = layer_pair.second->parameters();
+    all_parameters.insert(all_parameters.end(),
+                          layer_parameters.begin(),
+                          layer_parameters.end());
+  }
+
+  return all_parameters;
 }
 
 size_t count_model_params(const std::shared_ptr<NN>& model) {

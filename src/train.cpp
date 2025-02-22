@@ -35,6 +35,7 @@ int main(int argc, char** argv) {
 
   std::shared_ptr<NN> model = loadModel(path_to_nn_cfg);
   model->to(common._device);
+  model->train();
 
   std::shared_ptr<torch::optim::Optimizer> optimizer = loadOptimizer(path_to_nn_cfg, model);
   std::shared_ptr<BaseLayer> criterion = loadCriterion(path_to_nn_cfg);
