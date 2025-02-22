@@ -71,9 +71,7 @@ end-to-end example of nn configuration file:
 
 ```json
 {
-  ...
   "num_epochs": 500
-  ...
 }
 ```
 
@@ -83,9 +81,7 @@ end-to-end example of nn configuration file:
 
 ```json
 {
-  ...
   "to_save_path": 500
-  ...
 }
 ```
 
@@ -95,27 +91,17 @@ end-to-end example of nn configuration file:
 
 ```json
 {
-  ...
   "mbatch_size": 512
-  ...
 }
 ```
 
 ---
 
-**device** parameter means on what device to train model.
+**device** parameter means on what device to train model. There are two possible values: cpu and gpu. 
 
 ```json
 {
-  ...
   "device": "cpu"
-  ...
-
-  or
-
-  ...
-  "device": "gpu"
-  ...
 }
 ```
 
@@ -127,12 +113,10 @@ end-to-end example of nn configuration file:
 
 ```json
 {
-  ...
   "optimizer": {
     "type": "Adam",
     "lr": 0.001
   }
-  ...
 }
 ```
 
