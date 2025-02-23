@@ -65,7 +65,8 @@ std::shared_ptr<BaseLayer> loadCriterion(const std::string& nn_cfg_path) {
 std::shared_ptr<BaseLayer> getLayer(const std::string& layerName, json& layerJson) {
   // COMMON LAYERS
   if (layerJson["type"] == "dense") { return std::make_shared<DenseLayer>(layerName, layerJson); }
-
+  else if (layerJson["type"] == "conv") { return std::make_shared<ConvLayer>(layerName, layerJson); }
+  
   // AUXILIARY LAYERS
   else if (layerJson["type"] == "flatten") { return std::make_shared<FlattenLayer>(layerName, layerJson); }
   else if (layerJson["type"] == "reshape") { return std::make_shared<ReshapeLayer>(layerName, layerJson); }

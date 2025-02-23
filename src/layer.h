@@ -44,23 +44,50 @@ private:
   torch::nn::Linear linear {nullptr};
 };
 
-/*
+
 class ConvLayer : public BaseLayer {
 public:
   ConvLayer(const std::string& layerName, json& layerJson) {
-    
+    _kernel = layerJson["kernel"].get<std::vector<int>>();
+    _stride = layerJson["stride"].get<std::vector<int>>();
+    _padding = layerJson["padding"].get<std::vector<int>>();
+    _dilation = layerJson["dilation"].get<std::vector<int>>();
+    _nonlinearityType = layerJson["nonlinearity"];
+
+    conv = register_module(layerName, torch::nn::Conv2d(torch::nn::Conv2dOptions(layerJson["in_channels"], layerJson["out_channels"], {_kernel[0], _kernel[1]})
+                                                                           .stride({_stride[0], _stride[1]})
+                                                                           .padding({_padding[0], _padding[1]})
+                                                                           .dilation({_dilation[0], _dilation[1]})
+                                                                           .bias(layerJson["bias"].get<bool>())
+                                                                           .groups(layerJson["groups"])));
   }
 
-  torch::Tensor forward(torch::Tensor input) override {
-
+  torch::Tensor forward(torch::Tensor input, torch::Tensor label) override {
+    if (_nonlinearityType == "Linear") { return conv->forward(input); }
+    else if (_nonlinearityType == "Sigmoid") { return torch::sigmoid(conv->forward(input)); }
+    else if (_nonlinearityType == "Swish") { return torch::silu(conv->forward(input)); }
+    else if (_nonlinearityType == "Tanh") { return torch::tanh(conv->forward(input)); }
+    else if (_nonlinearityType == "ReLU") { return torch::relu(conv->forward(input)); }
+    else if (_nonlinearityType == "ELU") { return torch::elu(conv->forward(input)); } 
+    else if (_nonlinearityType == "LeakyReLU") { return torch::leaky_relu(conv->forward(input)); } 
+    else if (_nonlinearityType == "SELU") { return torch::selu(conv->forward(input)); } 
+    else if (_nonlinearityType == "CELU") { return torch::celu(conv->forward(input)); } 
+    else if (_nonlinearityType == "GELU") { return torch::gelu(conv->forward(input)); } 
+    else if (_nonlinearityType == "Softmax") { return torch::softmax(conv->forward(input), 1); }
+    else {
+      std::cout << "Incorrect nonlinearity type!\n";
+    }
   }
 
 private:
-  torch::nn::Conv3d conv3d {nullptr};
-  torch::nn::Conv2d conv2d {nullptr};
-  torch::nn::Conv1d conv1d {nullptr};
+  std::vector<int> _kernel;
+  std::vector<int> _stride;
+  std::vector<int> _padding;
+  std::vector<int> _dilation;
+  std::string _nonlinearityType;
+  torch::nn::Conv2d conv {nullptr};
 };
-*/
+
 
 // AUXILIARY LAYERS
 class FlattenLayer : public BaseLayer {
