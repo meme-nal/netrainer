@@ -164,7 +164,7 @@ Available nonlinearities:
       "input": "inputTensorName",
       "output": "outputTensorName",
       "shape": [100, 10],
-      "nonlinearity": "Linearity",
+      "nonlinearity": "Linear",
       "bias": true
     }
   }
@@ -174,6 +174,40 @@ Available nonlinearities:
 ---
 
 #### Conv layer
+
+**type** - type of layer. \
+**input** - input tensor. \
+**output** - output of layer. \
+**in_channels** - number of input channels. \
+**out_channels** - number of output channels. \
+**kernel** - shape of conv filter. \
+**nonlinearity** parameter means what type of activation function will be applied to layer output. \
+**bias** - use bias or not. \
+**stride** - shape of stride. First number - step along X axis, Second number - step along Y axis.\
+**padding** - shape of padding. First number - number of values to be added along the X axis, Second number - number of values to be added along the Y axis. \
+**dilation** - shape of dilation. Default is [1, 1] \
+**groups** - number of groups Default is 1. 
+
+```json
+{
+  "arch": {
+    "CustomLayerName": {
+      "type": "conv",
+      "input": "inputTensorName",
+      "output": "outputTensorName",
+      "in_channels": 1,
+      "out_channels": 8,
+      "kernel": [20, 6],
+      "nonlinearity": "ReLU",
+      "bias": true,
+      "stride": [1, 1],
+      "padding": [0, 0],
+      "dilation": [1, 1],
+      "groups": 1
+    }
+  }
+}
+```
 
 ### Auxiliary layers
 
