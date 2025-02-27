@@ -89,6 +89,67 @@ private:
 };
 
 
+class PoolingLayer : public BaseLayer {
+public:
+  PoolingLayer(const std::string& layerName, json& layerJson) {
+    _kernel = layerJson["kernel"].get<std::vector<int>>();
+    _stride = layerJson["stride"].get<std::vector<int>>();
+    _subtype = layerJson["subtype"].get<std::string>();
+    _nonlinearityType = layerJson["nonlinearity"];
+
+    if (_subtype == "max") {
+      max_pool = register_module(layerName, torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions({_kernel[0], _kernel[1]})
+                .stride({_stride[0], _stride[1]})));
+    } else if (_subtype == "avg") {
+      avg_pool = register_module(layerName, torch::nn::AvgPool2d(torch::nn::AvgPool2dOptions({_kernel[0], _kernel[1]})
+                .stride({_stride[0], _stride[1]})));
+    }
+  }
+
+  torch::Tensor forward(torch::Tensor input, torch::Tensor label) override {
+    if (_subtype == "max") {
+      if (_nonlinearityType == "Linear") { return max_pool->forward(input); }
+      else if (_nonlinearityType == "Sigmoid") { return torch::sigmoid(max_pool->forward(input)); }
+      else if (_nonlinearityType == "Swish") { return torch::silu(max_pool->forward(input)); }
+      else if (_nonlinearityType == "Tanh") { return torch::tanh(max_pool->forward(input)); }
+      else if (_nonlinearityType == "ReLU") { return torch::relu(max_pool->forward(input)); }
+      else if (_nonlinearityType == "ELU") { return torch::elu(max_pool->forward(input)); } 
+      else if (_nonlinearityType == "LeakyReLU") { return torch::leaky_relu(max_pool->forward(input)); } 
+      else if (_nonlinearityType == "SELU") { return torch::selu(max_pool->forward(input)); } 
+      else if (_nonlinearityType == "CELU") { return torch::celu(max_pool->forward(input)); } 
+      else if (_nonlinearityType == "GELU") { return torch::gelu(max_pool->forward(input)); } 
+      else if (_nonlinearityType == "Softmax") { return torch::softmax(max_pool->forward(input), 1); }
+      else {
+        std::cout << "Incorrect nonlinearity type!\n";
+      }
+    } else if (_subtype == "avg") {
+      if (_nonlinearityType == "Linear") { return avg_pool->forward(input); }
+      else if (_nonlinearityType == "Sigmoid") { return torch::sigmoid(avg_pool->forward(input)); }
+      else if (_nonlinearityType == "Swish") { return torch::silu(avg_pool->forward(input)); }
+      else if (_nonlinearityType == "Tanh") { return torch::tanh(avg_pool->forward(input)); }
+      else if (_nonlinearityType == "ReLU") { return torch::relu(avg_pool->forward(input)); }
+      else if (_nonlinearityType == "ELU") { return torch::elu(avg_pool->forward(input)); } 
+      else if (_nonlinearityType == "LeakyReLU") { return torch::leaky_relu(avg_pool->forward(input)); } 
+      else if (_nonlinearityType == "SELU") { return torch::selu(avg_pool->forward(input)); } 
+      else if (_nonlinearityType == "CELU") { return torch::celu(avg_pool->forward(input)); } 
+      else if (_nonlinearityType == "GELU") { return torch::gelu(avg_pool->forward(input)); } 
+      else if (_nonlinearityType == "Softmax") { return torch::softmax(avg_pool->forward(input), 1); }
+      else {
+        std::cout << "Incorrect nonlinearity type!\n";
+      }
+    }
+  }
+
+private:
+  std::vector<int> _kernel;
+  std::vector<int> _stride;
+  std::string _subtype;
+  std::string _nonlinearityType;
+  torch::nn::MaxPool2d max_pool {nullptr};
+  torch::nn::AvgPool2d avg_pool {nullptr};
+};
+
+
 // AUXILIARY LAYERS
 class FlattenLayer : public BaseLayer {
 public:

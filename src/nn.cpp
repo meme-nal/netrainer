@@ -66,6 +66,7 @@ std::shared_ptr<BaseLayer> getLayer(const std::string& layerName, json& layerJso
   // COMMON LAYERS
   if (layerJson["type"] == "dense") { return std::make_shared<DenseLayer>(layerName, layerJson); }
   else if (layerJson["type"] == "conv") { return std::make_shared<ConvLayer>(layerName, layerJson); }
+  else if (layerJson["type"] == "pooling") { return std::make_shared<PoolingLayer>(layerName, layerJson); }
   
   // AUXILIARY LAYERS
   else if (layerJson["type"] == "flatten") { return std::make_shared<FlattenLayer>(layerName, layerJson); }
