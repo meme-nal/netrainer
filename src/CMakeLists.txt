@@ -1,26 +1,17 @@
 cmake_minimum_required(VERSION 3.31.3)
 project(netrainer)
+
 find_package(Torch REQUIRED)
-
-if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. ")
-endif()
-
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
-set(HEADERS
-  batch.h
-  dataset.h
-  nn.h
-  layer.h
-  inputParser.h)
+include_directories(${CMAKE_SOURCE_DIR})
 
-set(SOURCES 
-  batch.cpp 
-  dataset.cpp
-  nn.cpp)
+file(GLOB_RECURSE SRC_FILES
+  "${CMAKE_SOURCE_DIR}/*.cpp"
+  "${CMAKE_SOURCE_DIR}/*.h"
+)
 
-add_executable(${PROJECT_NAME} train.cpp ${SOURCES} ${HEADERS})
+add_executable(${PROJECT_NAME} ${SRC_FILES})
 
 set(DEBUG_OPTIONS
   -g

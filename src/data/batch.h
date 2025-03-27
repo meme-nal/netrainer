@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstdint>
 #include <memory>
+#include <type_traits>
 
 #include <torch/torch.h>
 #include <nlohmann/json.hpp>

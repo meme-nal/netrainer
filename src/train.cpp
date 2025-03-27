@@ -2,8 +2,8 @@
 // THIS FILE IS USED TO TRAIN NEURAL NETWORKS ONLY
 ///
 
-#include "batch.h"
-#include "dataset.h"
+#include "data/batch.h"
+#include "data/dataset.h"
 #include "inputParser.h"
 #include "nn.h"
 
@@ -39,6 +39,7 @@ int main(int argc, char** argv) {
 
   std::shared_ptr<torch::optim::Optimizer> optimizer = loadOptimizer(path_to_nn_cfg, model);
   std::shared_ptr<BaseLayer> criterion = loadCriterion(path_to_nn_cfg);
+  std::shared_ptr<BaseLabelGenerator> label_generator = loadLabelGenerator(path_to_nn_cfg);
 
   std::cout << "Count of parameters: " << count_model_params(model) << "\n\n";
 
@@ -55,9 +56,12 @@ int main(int argc, char** argv) {
       optimizer->zero_grad();
 
       torch::Tensor features = batch.data.to(common._device);
-      torch::Tensor labels   = batch.target.to(common._device);
+      torch::Tensor labels   = batch.target.squeeze().to(common._device);
 
-      // it returns prediction on this moment. Then would be loss
+      if (label_generator) {
+        labels = (*label_generator)(labels);
+      }
+      
       torch::Tensor prediction = model->forward(features).to(common._device);
       torch::Tensor loss = criterion->forward(prediction, labels);
       
@@ -67,7 +71,6 @@ int main(int argc, char** argv) {
 
       std::cout << "loss | " << bi << " | : " << loss.item<float>() << '\n';
       ++bi;
-      
     }
     std::cout << "=== Mean Loss: " << mean_loss / (bi + 1) << " ===\n\n";
     std::string path_to_model_states = common._to_save_path;

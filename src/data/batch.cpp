@@ -28,23 +28,31 @@ Batch loadBatch(const std::string& batch_path,
   batch_file.read(reinterpret_cast<char*>(label_data.data()), label_data_count * sizeof(label_t));
 
   batch_file.close();
-    
+
   std::vector<torch::Tensor> labels(batch_size);
   for (size_t i {0}; i < batch_size; ++i) {
     std::vector<label_t> label;
-    for (size_t j {0}; j < (label_data_count / batch_size); ++j) {
-      label.push_back(label_data[i*batch_size + j]);
+    if (label_data_count / batch_size == 1) {
+      label.push_back(label_data[i]);
+    } else {
+      for (size_t j {0}; j < (label_data_count / batch_size); ++j) {
+        label.push_back(label_data[i*batch_size + j]);
+      }
     }
-    labels[i] = torch::tensor(label).view(label_data_shape);
+    if (std::is_same<label_t,float>::value) { labels[i] = torch::tensor(label, torch::dtype(torch::kFloat32)).view(label_data_shape); }
+    else if (std::is_same<label_t,int>::value) { labels[i] = torch::tensor(label, torch::dtype(torch::kInt32)).view(label_data_shape); }
+    else if (std::is_same<label_t,uint8_t>::value) { labels[i] = torch::tensor(label, torch::dtype(torch::kByte)).view(label_data_shape); }
   }
 
   std::vector<torch::Tensor> mains(batch_size);
   for (size_t i {0}; i < batch_size; ++i) {
-    std::vector<label_t> main;
+    std::vector<main_t> main;
     for (size_t j {0}; j < (main_data_count / batch_size); ++j) {
       main.push_back(main_data[i*batch_size + j]);
     }
-    mains[i] = torch::tensor(main).view(main_data_shape);
+    if (std::is_same<main_t,float>::value) { mains[i] = torch::tensor(main, torch::dtype(torch::kFloat32)).view(main_data_shape); }
+    else if (std::is_same<main_t,int>::value) { mains[i] = torch::tensor(main, torch::dtype(torch::kInt32)).view(main_data_shape); }
+    else if (std::is_same<main_t,uint8_t>::value) { mains[i] = torch::tensor(main, torch::dtype(torch::kByte)).view(main_data_shape); }
   }
 
   Batch batch(batch_size);
@@ -92,6 +100,9 @@ std::vector<Batch> loadBatches(const std::string& batches_path) {
                                     batch_size, main_data_shape, label_data_shape));
         } else if (main_dtype == "float32" && label_dtype == "float32") {
           batches.push_back(loadBatch<float, float>(std::filesystem::path(filename).string(),
+                                    batch_size, main_data_shape, label_data_shape));
+        } else if (main_dtype == "float32" && label_dtype == "int") { // not tested
+          batches.push_back(loadBatch<float, int>(std::filesystem::path(filename).string(),
                                     batch_size, main_data_shape, label_data_shape));
         } else {
           std::cerr << "These types does not supported! " << main_dtype << ' ' << label_dtype << "\n\n";

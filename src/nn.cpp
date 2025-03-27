@@ -172,3 +172,23 @@ std::shared_ptr<NN> loadModel(const std::string& nn_cfg_path) {
   std::shared_ptr<NN> model = std::make_shared<NN>(nn_cfg_json["arch"]);
   return model;
 }
+
+std::shared_ptr<BaseLabelGenerator> loadLabelGenerator(const std::string& nn_cfg_path) {
+  json nn_cfg_json;
+  std::ifstream nn_cfg_file(nn_cfg_path);
+
+  if (!nn_cfg_file.is_open()) {
+    std::cerr << "Could not open the file: " << nn_cfg_path << std::endl;
+  }
+
+  nn_cfg_file >> nn_cfg_json;
+  nn_cfg_file.close();
+
+  std::string labelType = nn_cfg_json["label_generator"]["type"];
+
+  if (labelType == "default") { return nullptr; }
+  else if (labelType == "ClassLabelGenerator") { return std::make_shared<ClassLabelGenerator>(nn_cfg_json["label_generator"]); }
+  else {
+    std::cout << "label generator type is not specified\n";
+  }
+}

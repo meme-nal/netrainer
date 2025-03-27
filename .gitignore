@@ -34,15 +34,14 @@
 # Build
 build/
 
-# Model
-model/
-log.txt
-
 # VSCode
 .vscode/
 
 # Configs
 *.json
+
+# Text files
+*.txt
 
 # Cmake
 CMakeLists.txt.user

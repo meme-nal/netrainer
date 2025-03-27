@@ -14,6 +14,9 @@
 
 #include "layer.h"
 
+#include "label_gen/label_gen.h"
+#include "label_gen/cls_label_gen.h"
+
 using json = nlohmann::json;
 
 struct CommonOptions {
@@ -57,6 +60,7 @@ CommonOptions loadCommonOptions(const std::string& nn_cfg_path);
 std::shared_ptr<NN> loadModel(const std::string& nn_cfg_path);
 std::shared_ptr<torch::optim::Optimizer> loadOptimizer(const std::string& nn_cfg_path, std::shared_ptr<NN>& model);
 std::shared_ptr<BaseLayer> loadCriterion(const std::string& nn_cfg_path);
+std::shared_ptr<BaseLabelGenerator> loadLabelGenerator(const std::string& nn_cfg_path);
 
 
 #endif // NN_H
