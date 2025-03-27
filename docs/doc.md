@@ -243,7 +243,7 @@ Available nonlinearities:
 #### Pooling layers
 
 **type** - type of layer \
-**subtype** - max pooling or average pooling \
+**subtype** - max pooling or avg pooling \
 **input** - input tensor \
 **output** - output tensor \
 **kernel** - shape of pooling filter \
@@ -255,7 +255,7 @@ Available nonlinearities:
   "arch": {
     "CustomLayerName": {
       "type": "pooling",
-      "subtype": "max", // avg
+      "subtype": "max",
       "input": "inputTensorName",
       "output": "outputTensorName",
       "kernel": [3, 3],
