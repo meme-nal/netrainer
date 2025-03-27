@@ -1,6 +1,6 @@
 # Usage documenation
 
-Program takes .json configuration file as an argument. Generally file consists of 3 main parts: **_common options_**, **_optimizer options_** and **_nn architecture_**.
+Program takes .json configuration file as an argument. Generally file consists of 4 main parts: **_common options_**, **_optimizer options_**, **_label generator_** and **_nn architecture_**.
 
 end-to-end example of nn configuration file:
 
@@ -14,6 +14,15 @@ end-to-end example of nn configuration file:
   "optimizer": {
     "type": "Adam",
     "lr": 0.001
+  },
+
+  "label_generator": {
+    "type": "default",
+    "rules": "path_to_rules.json",
+    "label_smoothing": {
+      "to_use": false,
+      "eps": 0.001
+    }
   },
 
   "arch": {
@@ -125,6 +134,27 @@ Available optimizer types:
 }
 ```
 
+## Label generator
+
+**type** - type of label generator. \
+Available label generator types:
+- default - does not change the label in batch. Commonly used in regression tasks. Label smoothing is not used.
+- ClassLabelGenerator - performs one hot encoding over label in batch. If there are K classes, then only the class number _k_ is added to the label in batch. Commonly used in classification tasks. Label Smoothing is used. 
+
+**rules** - path to json with additional information about custom label creation. Used in ClassLabelGenerator.
+
+rules.json for simple classification tasks:
+```json
+{
+  "class_0": 0,
+  "class_1": 1,
+  ...
+  "class_n": n
+}
+```
+
+**label_smoothing** - trick that smooths one hot label.
+
 ## Architecture
 
 Conventionally there are several types of layers. Common layers, auxiliary layers and loss layers.
@@ -181,7 +211,7 @@ Available nonlinearities:
 **in_channels** - number of input channels. \
 **out_channels** - number of output channels. \
 **kernel** - shape of conv filter. \
-**nonlinearity** parameter means what type of activation function will be applied to layer output. \
+**nonlinearity** - parameter means what type of activation function will be applied to layer output. \
 **bias** - use bias or not. \
 **stride** - shape of stride. First number - step along X axis, Second number - step along Y axis.\
 **padding** - shape of padding. First number - number of values to be added along the X axis, Second number - number of values to be added along the Y axis. \
@@ -204,6 +234,34 @@ Available nonlinearities:
       "padding": [0, 0],
       "dilation": [1, 1],
       "groups": 1
+    }
+  }
+}
+```
+
+---
+
+#### Pooling layers
+
+**type** - type of layer \
+**subtype** - max pooling or average pooling \
+**input** - input tensor \
+**output** - output tensor \
+**kernel** - shape of pooling filter \
+**nonlinearity** - parameter means what type of activation function will be applied to layer output. \
+**stride** - shape of stride. First number - step along X axis, Second number - step along Y axis.
+
+```json
+{
+  "arch": {
+    "CustomLayerName": {
+      "type": "pooling",
+      "subtype": "max", // avg
+      "input": "inputTensorName",
+      "output": "outputTensorName",
+      "kernel": [3, 3],
+      "nonlinearity": "ReLU",
+      "stride": [2, 2]
     }
   }
 }
