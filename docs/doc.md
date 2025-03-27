@@ -148,8 +148,7 @@ rules.json for simple classification tasks:
 {
   "class_0": 0,
   "class_1": 1,
-  ...
-  "class_n": n
+  "class_2": 2
 }
 ```
 
