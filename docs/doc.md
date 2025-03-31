@@ -313,6 +313,8 @@ Available nonlinearities:
 
 ### Special layers
 
+Don't forget about inference when using special layers!
+
 #### Batch Normalization layer
 
 **type** - type of layer. \
@@ -337,6 +339,29 @@ Available nonlinearities:
 
 ---
 
+#### Dropout layer
+
+**type** - type of layer. \
+**input** - input tensor. \
+**output** - output tensor. \
+**prob** - probability of disabling specific neuron.\
+**dims** - 1d or 2d dropout. 1d used after dense layer. 2d can be used before and after conv layer.
+
+```json
+{
+  "arch": {
+    "CustomLayerName": {
+      "type": "dropout",
+      "input": "inputTensorName",
+      "output": "outputTensorName",
+      "prob": 0.5,
+      "dims": 2
+    }
+  }
+}
+```
+
+---
 
 ### Loss layers
 
