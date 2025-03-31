@@ -74,6 +74,9 @@ std::shared_ptr<BaseLayer> getLayer(const std::string& layerName, json& layerJso
   
   // LOSS LAYERS
 
+  // SPECIAL LAYERS
+  else if (layerJson["type"] == "bn") { return std::make_shared<BatchNormLayer>(layerName, layerJson); }
+
   else {
     std::cout << "Incorrect layer type\n";
   }

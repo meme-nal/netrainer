@@ -245,4 +245,39 @@ private:
   torch::nn::CrossEntropyLoss ce_loss;
 };
 
+
+// SPECIAL LAYERS
+class BatchNormLayer : public BaseLayer {
+public:
+  BatchNormLayer(const std::string& layerName, json& layerJson) {
+    _dims = layerJson["dims"];
+    _channels = layerJson["channels"];
+
+    if (_dims == 1) {
+      _bn1d = register_module(layerName, torch::nn::BatchNorm1d(torch::nn::BatchNorm1dOptions(_channels)));
+    } else if (_dims == 2) {
+      _bn2d = register_module(layerName, torch::nn::BatchNorm2d(torch::nn::BatchNorm2dOptions(_channels)));
+    } else {
+      std::cout << "Incorrect dims number\n";
+    }
+  };
+
+  torch::Tensor forward(torch::Tensor prediction, torch::Tensor label) override {
+    if (_dims == 1) {
+      return _bn1d->forward(prediction);
+    } else if (_dims == 2) {
+      return _bn2d->forward(prediction);
+    } else {
+      std::cout << "Incorrect dims number\n";
+    }
+  }
+
+private:
+  size_t _dims;
+  size_t _channels;
+  torch::nn::BatchNorm1d _bn1d {nullptr};
+  torch::nn::BatchNorm2d _bn2d {nullptr};
+};
+
+
 #endif // LAYER_H
