@@ -310,6 +310,34 @@ Available nonlinearities:
 
 ---
 
+
+### Special layers
+
+#### Batch Normalization layer
+
+**type** - type of layer. \
+**input** - input tensor. \
+**output** - output tensor. \
+**channels** - count of input channels or input features.\
+**dims** - 1d or 2d batch normalization. 1d used after dense layer. 2d can be used before and after conv layer.
+
+```json
+{
+  "arch": {
+    "CustomLayerName": {
+      "type": "bn",
+      "input": "inputTensorName",
+      "output": "outputTensorName",
+      "channels": 32,
+      "dims": 2
+    }
+  }
+}
+```
+
+---
+
+
 ### Loss layers
 
 The last layer is used to calculate loss while training. Note that this layer has specific **_final_** name. \
