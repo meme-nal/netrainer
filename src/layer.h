@@ -250,8 +250,8 @@ private:
 class BatchNormLayer : public BaseLayer {
 public:
   BatchNormLayer(const std::string& layerName, json& layerJson) {
-    _dims = layerJson["dims"];
-    _channels = layerJson["channels"];
+    _dims = layerJson["dims"].get<size_t>();
+    _channels = layerJson["channels"].get<size_t>();
 
     if (_dims == 1) {
       _bn1d = register_module(layerName, torch::nn::BatchNorm1d(torch::nn::BatchNorm1dOptions(_channels)));
@@ -279,5 +279,37 @@ private:
   torch::nn::BatchNorm2d _bn2d {nullptr};
 };
 
+
+class DropoutLayer : public BaseLayer {
+public:
+  DropoutLayer(const std::string& layerName, json& layerJson) {
+    _prob = layerJson["prob"].get<float>();
+    _dims = layerJson["dims"].get<size_t>();
+    
+    if (_dims == 1) {
+      dropout1d = register_module(layerName, torch::nn::Dropout(torch::nn::DropoutOptions(_prob)));
+    } else if (_dims == 2) {
+      dropout2d = register_module(layerName, torch::nn::Dropout2d(torch::nn::Dropout2dOptions(_prob)));
+    } else {
+      std::cout << "Incorrect dims number\n";
+    }
+  }
+
+  torch::Tensor forward(torch::Tensor prediction, torch::Tensor label) override {
+    if (_dims == 1) {
+      return dropout1d->forward(prediction);
+    } else if (_dims == 2) {
+      return dropout2d->forward(prediction);
+    } else {
+      std::cout << "Incorrect dims number\n";
+    }
+  }
+
+private:
+  float _prob;
+  size_t _dims;
+  torch::nn::Dropout dropout1d {nullptr};
+  torch::nn::Dropout2d dropout2d {nullptr};
+};
 
 #endif // LAYER_H
