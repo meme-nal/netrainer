@@ -14,6 +14,9 @@ CommonOptions loadCommonOptions(const std::string& nn_cfg_path) {
   return CommonOptions(
     nn_cfg_json["num_epochs"].get<size_t>(),
     nn_cfg_json["to_save_path"].get<std::string>(),
+    nn_cfg_json["start_from_epoch"].get<std::string>(),
+    nn_cfg_json["train_part"].get<int>(),
+    nn_cfg_json["test_part"].get<int>(),
     nn_cfg_json["mbatch_size"].get<size_t>(),
     torch::cuda::is_available() ? torch::kCUDA : torch::kCPU);  
 }
@@ -137,6 +140,19 @@ void print_arch(const std::shared_ptr<NN>& model) {
     std::cout << param.key() << " : " << param.value().sizes() << "\n\n";
   }
   std::cout << '\n';
+}
+
+void print_to_terminal(const std::string& message) {
+  int fd = open("/dev/tty", O_WRONLY);
+  if (fd == -1) {
+    std::cerr << "Ошибка открытия терминала." << std::endl;
+    return;
+  }
+
+  write(fd, message.c_str(), message.size());
+  write(fd, "\n", 1);
+
+  close(fd);
 }
 
 std::vector<torch::Tensor> NN::parameters() {
