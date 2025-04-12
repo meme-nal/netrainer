@@ -11,6 +11,9 @@ end-to-end example of nn configuration file:
   "mbatch_size": 512,
   "device": "cpu",
 
+  "train_part": 80,
+  "test_part": 20,
+
   "optimizer": {
     "type": "Adam",
     "lr": 0.001
@@ -111,6 +114,26 @@ end-to-end example of nn configuration file:
 ```json
 {
   "device": "cpu"
+}
+```
+
+---
+
+**train_part** - part of batches in percent to train nn.
+
+```json
+{
+  "train_part": 80
+}
+```
+
+---
+
+**test_part** - part of batches in percent to measure quality of nn on each epoch.
+
+```json
+{
+  "test_part": 20
 }
 ```
 
