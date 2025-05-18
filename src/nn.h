@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <functional>
+#include <unordered_map>
 #include <map>
 
 #include <torch/torch.h>
@@ -41,34 +43,49 @@ struct CommonOptions {
 };
 
 
-class NN: public torch::nn::Module {
+class NetImpl : public torch::nn::Module {
 private:
-  std::map<std::string, std::shared_ptr<BaseLayer>> _layers;
+  std::map<std::string, std::shared_ptr<torch::nn::Module>> _tmp_layers;
+  /* ARCH */
+  std::vector<std::string>                          _tensor_names;
+  //std::map<std::string, std::string>                _layer_nonlinearities;
+  std::map<std::string, std::vector<std::string>>   _layer_lists;
   std::vector<std::string>                          _layer_names;
-  std::map<std::string, torch::Tensor>              _layer_inputs;
-  std::map<std::string, torch::Tensor>              _layer_outputs;
+  /* ARCH */
   json                                              _net_configuration;
 
-  //bool                                              _trainMode;
+private:
+  std::vector<std::string> findInputsByOutput(const std::string& output, json& nn_arch_cfg) const;
+  std::string findLayerByOutput(const std::string& output, json& nn_arch_cfg) const;
+  //torch::Tensor calculate_value(std::map<std::string, std::vector<std::string>>& graph, const std::string& vertex, torch::Tensor input_tensor);
+public:
+  void print_modules() {
+    // Iterate over all submodules
+    for (const auto& named_module : this->named_modules()) {
+      std::cout << "Module name: " << named_module.key() << std::endl;
+      std::cout << "Module type: " << named_module.value()->name() << std::endl;
+    }
+  }
 
 public:
-  NN(json& nn_arch_cfg);
+  NetImpl(json& nn_arch_cfg);
   torch::Tensor forward(torch::Tensor X);
-  std::vector<torch::Tensor> parameters();
-
-  //void train() { _trainMode = true; }
-  //void eval() { _trainMode = false; }
+  //std::vector<torch::Tensor> parameters();
 };
+TORCH_MODULE(Net);
 
-std::shared_ptr<BaseLayer> getLayer(const std::string& layerName, json& layerJson);
+//std::shared_ptr<BaseLayer> getLayer(const std::string& layerName, json& layerJson);
 
-void print_arch(const std::shared_ptr<NN>& model);
+void print_arch(const std::shared_ptr<Net>& model);
+void print_model_weights(const std::shared_ptr<Net>& model);
+void print_weights(const torch::nn::Module& module);
 void print_to_terminal(const std::string& message);
-size_t count_model_params(const std::shared_ptr<NN>& model);
+size_t count_model_params(const torch::nn::Module& module);
+size_t count_parameters(Net& model);
 CommonOptions loadCommonOptions(const std::string& nn_cfg_path);
-std::shared_ptr<NN> loadModel(const std::string& nn_cfg_path);
-std::shared_ptr<torch::optim::Optimizer> loadOptimizer(const std::string& nn_cfg_path, std::shared_ptr<NN>& model);
-std::shared_ptr<BaseLayer> loadCriterion(const std::string& nn_cfg_path);
+Net loadModel(const std::string& nn_cfg_path);
+std::shared_ptr<torch::optim::Optimizer> loadOptimizer(const std::string& nn_cfg_path, Net& model);
+std::shared_ptr<torch::nn::Module> loadCriterion(const std::string& nn_cfg_path);
 std::shared_ptr<BaseLabelGenerator> loadLabelGenerator(const std::string& nn_cfg_path);
 
 
